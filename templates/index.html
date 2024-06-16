@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}All Recipes{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3 recipe-list">
+        <h2>Recipes</h2>
+        <ul class="list-group">
+            {% if recipes %}
+                {% for recipe in recipes %}
+                    <li class="list-group-item recipe-item" onclick="displayRecipe('{{ recipe.name }}', `{{ recipe.ingredients|replace('\n', '\\n') }}`, `{{ recipe.steps|replace('\n', '\\n') }}`)">
+                        Try Yummy {{ recipe.name }}
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p class="text-warning">No recipes available. Please submit a recipe!</p>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="col-md-6 main-recipe">
+        <h2 id="recipe-title">Recipe Name</h2>
+        <h3>Ingredients</h3>
+        <p id="recipe-ingredients">Ingredients will be listed here.</p>
+        <h3>Steps</h3>
+        <p id="recipe-steps">Steps to prepare the recipe will be listed here.</p>
+    </div>
+
+    <div class="col-md-3 submission-form">
+        <h2>Submit a Recipe</h2>
+        <form action="/submit-recipe" method="POST">
+            <div class="mb-3">
+                <label for="title" class="form-label">Recipe Title:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="ingredients" class="form-label">Ingredients:</label>
+                <textarea class="form-control" id="ingredients" name="ingredients" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="steps" class="form-label">Steps:</label>
+                <textarea class="form-control" id="steps" name="steps" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function displayRecipe(name, ingredients, steps) {
+        document.getElementById('recipe-title').innerText = name;
+        document.getElementById('recipe-ingredients').innerText = ingredients;
+        document.getElementById('recipe-steps').innerText = steps;
+    }
+
+    window.onload = function() {
+        // Automatically display the first recipe
+        {% if recipes|length > 0 %}
+        displayRecipe(
+            "{{ recipes[0].name }}",
+            `{{ recipes[0].ingredients|replace('\n', '\\n') }}`,
+            `{{ recipes[0].steps|replace('\n', '\\n') }}`
+        );
+        {% endif %}
+    }
+</script>
+{% endblock %}
